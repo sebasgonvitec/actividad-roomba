@@ -4,6 +4,11 @@ from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 from agent import RoombaAgent, ObstacleAgent, TrashAgent
 
+# TODO: Generate trash based on trash rate
+# TODO: Data collection and display 
+
+# TODO: Test case: Two Roombas erase the same trash
+
 class RoombaModel(Model):
     """
     Creates a new model with Roomba agents.
@@ -11,7 +16,7 @@ class RoombaModel(Model):
         N: Number of Roomba agents
         height, width: Size of the grid
     """
-    def __init__(self, N, width, height):
+    def __init__(self, trash_rate, N, width, height):
         self.num_agents = N
         self.grid = MultiGrid(width, height, torus=False)
         self.schedule = RandomActivation(self)
@@ -41,7 +46,13 @@ class RoombaModel(Model):
             self.grid.place_agent(a, (1,1))
 
         self.datacollector.collect(self)
-        # Add the trash to a random empty grid cell
+
+        # Fill cells with trash according to trash rate
+        for i in range(1, self.grid.width-1):
+            for j in range(1, self.grid.height-1):
+                if self.random.random() < trash_rate:
+                    trash = TrashAgent((i,j), self)
+                    self.grid.place_agent(trash, (i,j))
 
     def step(self):
         '''Advance the model by one step.'''

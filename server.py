@@ -23,7 +23,7 @@ def agent_portrayal(agent):
 
     return portrayal
 
-model_params = {"N":5, "width":10, "height":10}
+model_params = {"N":5, "trash_rate":0.25, "width":10, "height":10}
 
 grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
 bar_chart = BarChartModule(
