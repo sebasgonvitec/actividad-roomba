@@ -1,6 +1,6 @@
 from mesa import Agent
 
-class Roomba(Agent):
+class RoombaAgent(Agent):
     """
     Agent that simulates the behaviour of a Roomba
     Attributes:
@@ -33,15 +33,25 @@ class Roomba(Agent):
         next_moves = [p for p, f in zip(possible_steps, freeSpaces) if f==True]
 
         next_move = self.random.choice(next_moves)
-
+        print("Next move is: ", next_move)
+        
         if self.random.random() < 0.1:
             self.model.grid.move_agent(self, next_move)
             self.steps_taken += 1
-    
+
+        # If the cell is empty, moves the agent to that cell; otherwise, it stays at the same position
+        # if freeSpaces[self.direction]:
+        #     self.model.grid.move_agent(self, possible_steps[self.direction])
+        #     print(f"Se mueve de {self.pos} a {possible_steps[self.direction]}; direction {self.direction}")
+        # else:
+        #     print(f"No se puede mover de {self.pos} en esa direccion.")
+        
     def step(self):
         """
         Determines the new direction it will take, and then moves
         """
+        self.direction = self.random.randint(0,8)
+        print(f"Agente: {self.unique_id} movimiento {self.direction}")
         self.move()
 
 class ObstacleAgent(Agent):
