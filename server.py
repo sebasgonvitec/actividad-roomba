@@ -24,7 +24,12 @@ def agent_portrayal(agent):
 
     return portrayal
 
-model_params = {"N":UserSettableParameter("slider", "Roomba Num", 10, 1, 50, 1), "trash_rate": UserSettableParameter("slider", "Trash Rate", 0.5, 0.1, 1, 0.01), "width":10, "height":10}
+model_params = {
+    "N":UserSettableParameter("slider", "Roomba Num", 10, 1, 50, 1), 
+    "trash_rate": UserSettableParameter("slider", "TrashRate", 0.5, 0.1, 1, 0.01), 
+    "width":10, 
+    "height":10, 
+    "steps": UserSettableParameter("number", "Max Steps", value=120)}
 
 grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
 
@@ -33,7 +38,7 @@ bar_chart = BarChartModule(
     scope ="agent", sorting="ascending", sort_by="Steps")
 
 pie_chart = PieChartModule(
-    [{"Label": "Clean", "Color": "#cdcbd4"}, {"Label": "Trash", "Color": "green"}, ]
+    [{"Label": "Clean", "Color": "#cdcbd4"}, {"Label": "Trash", "Color": "green"}]
 )
 
 server = ModularServer(RoombaModel, [grid, pie_chart, bar_chart], "Roomba Agent", model_params)

@@ -15,11 +15,13 @@ class RoombaModel(Model):
         N: Number of Roomba agents
         height, width: Size of the grid
     """
-    def __init__(self, trash_rate, N, width, height):
+    def __init__(self, trash_rate, N, width, height, steps):
         self.num_agents = N
         self.grid = MultiGrid(width, height, torus=False)
         self.schedule = RandomActivation(self)
         self.running = True
+        self.steps = 0
+        self.max_steps = steps
 
         self.datacollector = DataCollector( 
             model_reporters={"Trash": lambda m: self.count_trash(), "Clean": lambda c: self.count_clean()},
@@ -31,7 +33,6 @@ class RoombaModel(Model):
         
         for pos in border:
             obs = ObstacleAgent(pos, self)
-            self.schedule.add(obs)
             self.grid.place_agent(obs, pos)
             
 
@@ -52,7 +53,6 @@ class RoombaModel(Model):
             for j in range(1, self.grid.height-1):
                 if self.random.random() < trash_rate:
                     trash = TrashAgent((i,j), self)
-                    self.schedule.add(trash)
                     self.grid.place_agent(trash, (i,j))
                     
         self.datacollector.collect(self)
@@ -61,9 +61,10 @@ class RoombaModel(Model):
         '''Advance the model by one step.'''
         self.schedule.step()
         self.datacollector.collect(self)
+        self.steps+=1
         
-        #Stop if there is no more trash left
-        if self.count_trash() == 0:
+        #Stop if there is no more trash left or step limit reached
+        if self.count_trash() == 0 or self.steps >= self.max_steps-1:
             self.running = False
 
 
