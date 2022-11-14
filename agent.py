@@ -39,7 +39,7 @@ class RoombaAgent(Agent):
         # For each cell, check if any existing agent is obstacle and append True or False accordingly
         for i in range(len(neighbor_agents)):
             for j in neighbor_agents[i]:
-                if(isinstance(j, ObstacleAgent) or isinstance(j, RoombaAgent)):
+                if(isinstance(j, ObstacleAgent)):
                     isObstacle = True
             if(isObstacle):
                 freeSpaces.append(False)

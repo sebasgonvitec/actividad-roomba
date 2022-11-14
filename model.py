@@ -4,9 +4,8 @@ from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 from agent import RoombaAgent, ObstacleAgent, TrashAgent
 
-# TODO: Generate trash based on trash rate
+# TODO: Generate trash based on trash rate check
 # TODO: Data collection and display 
-
 # TODO: Test case: Two Roombas erase the same trash
 
 class RoombaModel(Model):
@@ -23,15 +22,18 @@ class RoombaModel(Model):
         self.running = True
 
         self.datacollector = DataCollector( 
-        agent_reporters={"Steps": lambda a: a.steps_taken if isinstance(a, RoombaAgent) else 0})
+            model_reporters={"Trash": lambda m: self.count_trash(), "Clean": lambda c: self.count_clean()},
+            agent_reporters={"Steps": lambda a: a.steps_taken if isinstance(a, RoombaAgent) else 0})
+        
 
         # Create borders for the grid
         border = [(x,y) for y in range(height) for x in range(width) if y in [0, height-1] or x in [0, width - 1]]
         
         for pos in border:
             obs = ObstacleAgent(pos, self)
-            # self.schedule.add(obs)
+            self.schedule.add(obs)
             self.grid.place_agent(obs, pos)
+            
 
         # Add the agent to the starting cell
         for i in range(self.num_agents):
@@ -45,16 +47,44 @@ class RoombaModel(Model):
             # self.grid.place_agent(a, pos)
             self.grid.place_agent(a, (1,1))
 
-        self.datacollector.collect(self)
-
         # Fill cells with trash according to trash rate
         for i in range(1, self.grid.width-1):
             for j in range(1, self.grid.height-1):
                 if self.random.random() < trash_rate:
                     trash = TrashAgent((i,j), self)
+                    self.schedule.add(trash)
                     self.grid.place_agent(trash, (i,j))
+                    
+        self.datacollector.collect(self)
 
     def step(self):
         '''Advance the model by one step.'''
         self.schedule.step()
         self.datacollector.collect(self)
+        
+        #Stop if there is no more trash left
+        if self.count_trash() == 0:
+            self.running = False
+
+
+    def count_trash(self):
+        """
+        Helper method to count trash in a given model.
+        """
+        trash = 0
+        for cell in self.grid.coord_iter():
+            cell_content, x, y = cell
+            for agent in cell_content:
+                if isinstance(agent, TrashAgent):
+                    trash += 1
+        return trash
+    
+    def count_clean(self):
+        return (self.grid.height-1)*(self.grid.width-1) - self.count_trash()
+
+       
+
+
+
+
+
