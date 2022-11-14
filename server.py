@@ -27,11 +27,11 @@ def agent_portrayal(agent):
 model_params = {
     "N":UserSettableParameter("slider", "Roomba Num", 10, 1, 50, 1), 
     "trash_rate": UserSettableParameter("slider", "TrashRate", 0.5, 0.1, 1, 0.01), 
-    "width":10, 
-    "height":10, 
+    "width":UserSettableParameter("slider", "Width", 15, 1, 50, 1), 
+    "height":UserSettableParameter("slider", "Height", 15, 1, 50, 1), 
     "steps": UserSettableParameter("number", "Max Steps", value=120)}
 
-grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
+grid = CanvasGrid(agent_portrayal, model_params["height"].value, model_params["width"].value, 500, 500)
 
 bar_chart = BarChartModule(
     [{"Label":"Steps", "Color":"#cf3e3e"}],
