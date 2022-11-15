@@ -34,7 +34,7 @@ model_params = {
     "height": user_height,
     "steps": UserSettableParameter("number", "Max Steps", value=120)}
 
-grid = CanvasGrid(agent_portrayal, user_width, user_height, 500, 500)
+grid = CanvasGrid(agent_portrayal, user_width,user_height, 500, 500)
 
 bar_chart = BarChartModule(
     [{"Label":"Steps", "Color":"#cf3e3e"}],
